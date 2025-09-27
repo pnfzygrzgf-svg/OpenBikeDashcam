@@ -18,6 +18,6 @@ Das Projekt besteht aus einer Dashcam fürs Fahrrad, die Videos des rückwärtig
 - bisher gibt es noch kein Gehäuse für die Dashcam. Die Entwicklung ist aber in Arbeit. 
 
 # Lizenz
-Software: GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
+Software: GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007  
 Hardware: CERN Open Hardware Licence Version 2 - Strongly Reciprocal
 

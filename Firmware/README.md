@@ -1,5 +1,5 @@
 
-# Installation der Open Bike Dashcam auf dem Raspberry Pi 5
+# Installation der Open Bike Dashcam auf dem Raspberry Pi compute module 5
 
 Das CM5 hat kein Display. Daher erfolgt die Installation ohne direkt angeschlossenes Display. 
 

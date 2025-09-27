@@ -1,4 +1,6 @@
 # Komponenten: 
+<img src="Anschlussschema.jpg" alt="Anschlussschema der Dashcam Komponenten" width="600">  
+
 1) Raspberry Pi cm5 (das compute module, wegen der Baugröße. Der Protoyp läuft auf der Version 8GB RAM mit 32GB emmc, aber ein kleiner sollte auch reichen)
 2) Waveshare CM5 Nano-IO Board (A) - (also nur USB-C und USB-A anschluss)
 3) Raspberry pi camera module 3 wide

@@ -109,7 +109,7 @@ unter Windows den Sensor per USB anschließen:
 	16.11 Sensor vorbereiten: Boot gedrückt halten - reset kurz drücken - boot loslassen  
 	16.12 com-port des sensors aus gerätemanager suchen (z.B. com7)     
     	Falls der Sensor beim Einstecken **nicht als "USB Serial Port"** im **Geräte-Manager** auftaucht, installiere den passenden **CH340-USB-Treiber**: https://learn.sparkfun.com/tutorials/how-to-install-ch340-drivers/all  
-	16.13 aus dem sdk-ordner-out die i2c_detector_distance.bin Datei suchen 
+	16.13 aus dem sdk-ordner-out die i2c_detector_distance.bin Datei suchen  
 	16.14 im browse menü die .bin datei auswählen  
 	16.15 Sensor einstellen und auf flashen drücken --> firmware wird auf den sensor geladen  
 	16.16 reset button 1x drücken  
@@ -145,7 +145,7 @@ unter Windows den Sensor per USB anschließen:
 	- optional: (Zum sofortigen Starten des Programms) `sudo systemctl start Dashcam.service`
  	- optional: (zum stoppen des Programms) `sudo systemctl stop Dashcam.service`
 
-#RTC einrichten:
+# RTC einrichten:
 22) RTC einrichten:  
 	22.1 `sudo nano /boot/firmware/config.txt` öffnen
 	22.1 dort die folgende Zeil einfügen: 

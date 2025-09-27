@@ -15,7 +15,7 @@ Das Projekt besteht aus einer Dashcam fürs Fahrrad, die Videos des rückwärtig
 
 # Ausblick: demnächst verfügbare Funktionen  
 - weitere Fahrradcomputer-Funktionen in der WebApp (Max-Geschwindigkeit, Durchschnittsgeschwindigkeit, Fahrzeit, Fahrstecke in km. Alles seit dem letzten Programmstart und seit Inbetriebnahme der Dashcam)
-- ..
+- bisher gibt es noch kein Gehäuse für die Dashcam. Die Entwicklung ist aber in Arbeit. 
 
 # Lizenz
 Software: GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007

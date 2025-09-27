@@ -1,7 +1,7 @@
 ----- Das ist die erste, veröffentlichte Version der Dashcam. Sie enthält noch ein paar Bugs und Verbesserungsmöglichkeiten, die demnächst bearbeitet werden ---------  
 
 
-# OpenBikeDashcam
+# OpenBikeDashcam - Kurzbeschreibung
 Das Projekt besteht aus einer Dashcam fürs Fahrrad, die Videos des rückwärtigen und seitlichen Verkehrs aufnimmt. Zusätzlich wird mit einem Abstandssensor der Überholabstand der vorbeifahrenden Autos ermittelt und im Video angezeigt. Folgende Funktionen sind bereits integriert: 
 
 - Videoaufnahme in Sequenzen von einstellbarer Länge (z.B. 30Sekunden)  

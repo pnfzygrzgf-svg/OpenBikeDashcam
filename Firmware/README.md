@@ -122,23 +122,23 @@ unter Windows den Sensor per USB anschließen:
     - gps_receiver.py  
     - den Ordner "static"
 
-19) den Ordner "settings" auf den USB Stick verschieben (ohne Unterverzeichnis)
-20) Testen den Programms:
-    20.1 venv aktivieren:
+18) den Ordner "settings" auf den USB Stick verschieben (ohne Unterverzeichnis)  
+19) Testen des Programms:  
+    19.1 venv aktivieren:  
 
 		source venv/bin/activate
 
-	20.2 Programm starten:
+	19.2 Programm starten:  
 
 		python3 venv/Dashcam.py
 
-21) Datei im Autostart hinterlegen:  
-	21.1 über folgenden Befehl einen sudo Dateiexplorer öffnen:  
+20) Datei im Autostart hinterlegen:  
+	20.1 über folgenden Befehl einen sudo Dateiexplorer öffnen:  
 
 		sudo pcmanfm
 
-	21.2 dann die Datei "Dashcam.service" in den Ordner "/etc/systemd/system/" kopieren  
-    21.3 Service-Datei aktivieren:
+	20.2 dann die Datei "Dashcam.service" in den Ordner "/etc/systemd/system/" kopieren  
+    20.3 Service-Datei aktivieren:
     
 	- `sudo systemctl daemon-reload`   
 	- `sudo systemctl enable Dashcam.service`  
@@ -146,9 +146,9 @@ unter Windows den Sensor per USB anschließen:
  	- optional: (zum stoppen des Programms) `sudo systemctl stop Dashcam.service`
 
 # RTC einrichten:
-22) RTC einrichten:  
-	22.1 `sudo nano /boot/firmware/config.txt` öffnen
-	22.1 dort die folgende Zeil einfügen: 
+21) RTC einrichten:  
+	21.1 `sudo nano /boot/firmware/config.txt` öffnen
+	21.1 dort die folgende Zeil einfügen: 
 	
 		dtparam=rtc_bbat_vchg=3000000
 	

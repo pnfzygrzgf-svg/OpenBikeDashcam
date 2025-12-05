@@ -328,8 +328,29 @@ def save_worker(led_ctrl):
         task = save_queue.get()
         if task is None:
             break
-        writer_path, csv_path, shared_event_state, event_path = task
+        writer_path, csv_path, is_event, event_path = task
         try:
+            # Bei Event-Videos: Dateien umbenennen mit EVENT_ Präfix
+            if is_event:
+                old_video_name = os.path.basename(writer_path)
+                old_csv_name = os.path.basename(csv_path)
+                
+                # Nur umbenennen wenn noch nicht EVENT_ Präfix vorhanden
+                if not old_video_name.startswith("EVENT_"):
+                    new_video_name = f"EVENT_{old_video_name}"
+                    new_csv_name = f"EVENT_{old_csv_name}"
+                    
+                    new_writer_path = os.path.join(os.path.dirname(writer_path), new_video_name)
+                    new_csv_path = os.path.join(os.path.dirname(csv_path), new_csv_name)
+                    
+                    # Umbenennen in /dev/shm
+                    if os.path.exists(writer_path):
+                        os.rename(writer_path, new_writer_path)
+                        writer_path = new_writer_path
+                    if os.path.exists(csv_path):
+                        os.rename(csv_path, new_csv_path)
+                        csv_path = new_csv_path
+            
             free_bytes = get_free_space_bytes(event_path)
             if free_bytes < 100 * 1024 * 1024:
                 if not led_state_blue:
@@ -343,16 +364,16 @@ def save_worker(led_ctrl):
                     led_ctrl.set_color(1, 0, 0)  # rot
                     led_state_blue = False
 
-            if shared_event_state:
-                shutil.move(writer_path, os.path.join(event_path, os.path.basename(writer_path)))
-                shutil.move(csv_path, os.path.join(event_path, os.path.basename(csv_path)))
-                logger.info(f"Event-Video + CSV gesichert: {os.path.basename(writer_path)}")
+            # IMMER speichern - alle Videos in event_path
+            destination = os.path.join(event_path, os.path.basename(writer_path))
+            shutil.move(writer_path, destination)
+            shutil.move(csv_path, os.path.join(event_path, os.path.basename(csv_path)))
+            
+            if is_event:
+                logger.info(f"EVENT-Video gesichert: {os.path.basename(writer_path)}")
             else:
-                if os.path.exists(writer_path):
-                    os.remove(writer_path)
-                if os.path.exists(csv_path):
-                    os.remove(csv_path)
-                logger.info("Kein Event: Video + CSV gelöscht.")
+                logger.info(f"Video gesichert: {os.path.basename(writer_path)}")
+                
         except Exception as e:
             logger.error(f"Fehler im Save-Worker: {e}")
         save_queue.task_done()
@@ -391,20 +412,21 @@ class VideoWriterThread(threading.Thread):
         self.stopped.set()
         self.queue.join()
 
-def make_writer_thread():
-    fname = f"{SD_PATH}/{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.mp4"
+def make_writer_thread(is_event=False):
+    prefix = "EVENT_" if is_event else ""
+    fname = f"{SD_PATH}/{prefix}{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.mp4"
     writer_thread = VideoWriterThread(fname, (FRAME_WIDTH, FRAME_HEIGHT), FPS)
     writer_thread.start()
     return writer_thread, fname
 
 
-def stop_and_queue_save(writer_thread, csv_file, shared_event_state, writer_path, csv_path, event_path):
+def stop_and_queue_save(writer_thread, csv_file, is_event, writer_path, csv_path, event_path):
     # Schließen der CSV-Datei sofort
     csv_file.close()
     # Writer im Hintergrund stoppen lassen (nicht blockieren)
     writer_thread.stop()
     # Übergibt direkt die Dateien in die Save-Queue -> Save-Worker erledigt den Rest
-    save_queue.put((writer_path, csv_path, shared_event_state.value, event_path))
+    save_queue.put((writer_path, csv_path, is_event, event_path))
 
 
 def gps_worker_process(gps_data_dict, interval=1): #Messinterval = 1s
@@ -1036,15 +1058,18 @@ def main():
             if frame_count >= PARTIAL_FRAMES:
                 led_ctrl.set_on()
                 
-                # >>> Neuen Writer sofort starten <<<
-                new_writer_thread, new_writer_path = make_writer_thread()
+                # Speichere ob aktuelles Video ein Event war BEVOR reset
+                was_event = shared_event_state.value
+                
+                # >>> Neuen Writer sofort starten (ohne Event-Flag, da neue Aufnahme) <<<
+                new_writer_thread, new_writer_path = make_writer_thread(is_event=False)
                 new_csv_path = new_writer_path.replace('.mp4', '.csv')
                 new_csv_file = open(new_csv_path, 'w', newline='')
                 new_csv_writer = csv.writer(new_csv_file)
                 new_csv_writer.writerow(['timestamp', 'distance_cm', 'lat', 'lon', 'speed_kmh', 'heading_deg', 'status1', 'status2'])
                 
-                # >>> Das alte Paket asynchron speichern <<<
-                stop_and_queue_save(writer_thread, csv_file, shared_event_state, writer_path, csv_path, event_path)
+                # >>> Das alte Paket asynchron speichern mit Event-Status <<<
+                stop_and_queue_save(writer_thread, csv_file, was_event, writer_path, csv_path, event_path)
                 
                 # >>> Referenzen auf den neuen Writer setzen <<<
                 writer_thread = new_writer_thread
@@ -1055,7 +1080,7 @@ def main():
                 
                 led_ctrl.set_blink()
                 frame_count = 0
-                shared_event_state.value = False
+                shared_event_state.value = False  # Reset für neue Aufnahme
 
 
     except KeyboardInterrupt:
@@ -1069,8 +1094,8 @@ def main():
             led_ctrl.set_on()
 
             if frame_count > 0:
-                logger.info("Shutdown: letzte Videoaufnahme prüfen und speichern/löschen.")
-                stop_and_queue_save(writer_thread, csv_file, shared_event_state, writer_path, csv_path, event_path)
+                logger.info("Shutdown: letzte Videoaufnahme speichern.")
+                stop_and_queue_save(writer_thread, csv_file, shared_event_state.value, writer_path, csv_path, event_path)
             else:
                 csv_file.close()
 
